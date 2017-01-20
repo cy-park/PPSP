@@ -1,0 +1,37 @@
+{
+  "name": "ppsp",
+  "version": "0.0.1",
+  "description": "A snappy transition web page creator. Page-Page-Snappy-Page or Pen-Pineapple-Snapple-Pen.",
+  "main": "src/PPSP.js",
+  "scripts": {
+    "server": "http-server .",
+    "watch": "watch 'npm run dist' src",
+    "dist": "mkdir -p dist && uglifyjs src/PPSP.js -o dist/PPSP.min.js --mangle",
+    "inst": "npm install slide-scroll --save && npm install uglify-js http-server --save-dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cy-park/PPSP.git"
+  },
+  "keywords": [
+    "snap",
+    "pagination",
+    "fullpage",
+    "scroll",
+    "ppap"
+  ],
+  "author": "Chan Young Park <designbycy@gmail.com> (http://www.chanyoungpark.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cy-park/PPSP/issues"
+  },
+  "homepage": "https://github.com/cy-park/PPSP#readme",
+  "devDependencies": {
+    "http-server": "^0.9.0",
+    "uglify-js": "^2.7.5"
+  },
+  "dependencies": {
+    "slide-scroll": "0.0.2"
+  }
+}
