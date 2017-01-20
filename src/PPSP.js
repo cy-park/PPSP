@@ -1,6 +1,6 @@
 // Supports modern browsers & IE10+
 
-(function (global, factory) {
+;(function (global, factory) {
 	'use strict';
 	if(typeof define === 'function' && define.amd) {
 		define(['SlideScroll'], function(SlideScroll){
@@ -20,7 +20,7 @@
 		for (var k in args) {
 			root[k] = args[k];
 		}
-		root.ss = new SlideScroll();
+		root.ss = new SlideScroll(args.SlideScroll);
 		root.el = document.querySelectorAll(root.selector);
 		root.currentIndex = 0;
 	};
@@ -60,6 +60,32 @@
 		return root.el.length - 1;
 	}
 
+	function getClosestIndexFromViewport(){
+		var closest_index = 0,
+			closest_index_top = root.el[0].getBoundingClientRect().top;
+		for (var i = 1; i < root.el.length; i++) {
+			var new_top = root.el[i].getBoundingClientRect().top;
+			if (Math.abs(closest_index_top) > Math.abs(new_top)) {
+				closest_index = i;
+				closest_index_top = new_top;
+			}
+			else {
+				if (isSkipping(closest_index)) {
+					var prev_index = getPrevIndex(closest_index),
+						next_index = getNextIndex(closest_index);
+
+					var prev_top = root.el[prev_index].getBoundingClientRect().top,
+						next_top = root.el[next_index].getBoundingClientRect().top;
+
+					if (Math.abs(prev_top) < Math.abs(next_top)) closest_index = prev_index;
+					else closest_index = next_index;
+				}
+				break;	
+			} 
+		}
+		return closest_index;
+	}
+
 	PPSP.prototype.prev = function(callback, callback_args){
 		root.goto(getPrevIndex(), callback, callback_args);
 	};
@@ -80,13 +106,22 @@
 		});
 	};
 
-	PPSP.prototype.refresh = function(){};
+	PPSP.prototype.snap = function(){
+		if (root.el[root.currentIndex].getBoundingClientRect().top !== 0) root.goto(getClosestIndexFromViewport());
+	};
 
-
+	PPSP.prototype.refresh = function(selector){
+		selector = selector || root.selector;
+		root.el = document.querySelectorAll(selector);
+		root.snap();
+	};
 
 	window.addEventListener('wheel', function(e){
 		e.preventDefault();
-		console.log('wheeled');
+		if (!root.ss._is_scrolling) {
+			if (e.deltaY < 0) root.prev(); //moving up
+			else root.next(); // moving down
+		}
 	});
 
 	window.addEventListener('keydown', function(e){
@@ -102,10 +137,13 @@
 	});
 
 	window.addEventListener('scroll', function(e){
-		e.preventDefault();
 		console.log('scrolled');
+		window.setTimeout(root.snap,500);
 	});
 
+	window.addEventListener('resize', function(e){
+		window.setTimeout(root.snap,500);
+	});
 
 
 	return PPSP;
