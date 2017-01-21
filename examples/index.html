@@ -23,15 +23,15 @@
 	<section>5</section>
 </body>
 <script>
-	var ppsp = new PPSP({selector:'section'})
+	var ppsp = new PPSP({
+		selector: 'section',
+		onLeave: function(){
+			console.log('onLeave fired at page '+this.currentIndex);
+		},
+		afterLoad: function(){
+			console.log('afterLoad fired at page '+this.currentIndex);
+		}
+	});
 	console.log(ppsp.el)
-
-	// var cb = function(a) {
-	// 	console.log(a, window.pageYOffset);
-	// }
-	// var cb_args = ['callback is called.'];
-	// window.addEventListener('click',function(){
-	// 	ss.to(2500, cb, cb_args);
-	// });
 </script>
 </html>

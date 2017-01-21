@@ -100,8 +100,10 @@
 			target_index = root.currentIndex - target_index < 0 ? getNextIndex(target_index) : getPrevIndex(target_index);
 		var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
 
+		if (root.onLeave) root.onLeave.call(root);
 		root.ss.to(target_px, function(){
 			root.currentIndex = target_index;
+			if (root.afterLoad) root.afterLoad.call(root);
 			if (callback) callback.apply(null,callback_args);
 		});
 	};

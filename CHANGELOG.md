@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+## 0.0.3 (2017-01-20, alpha release)
+
+#### features:
+ - added onLeave and afterLoad settings when initializing 
+
 ## 0.0.2 (2017-01-20, alpha release)
 
 #### features:
