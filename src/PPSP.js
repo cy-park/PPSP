@@ -7,7 +7,7 @@
 			return (global.PPSP = factory(SlideScroll));
 		});
 	} else if(typeof module === 'object' && module.exports) {
-		module.exports = (global.PPSP = factory(require('SlideScroll')));
+		module.exports = (global.PPSP = factory(require('slide-scroll')));
 	} else {
 		global.PPSP = factory(global.SlideScroll);
 	}

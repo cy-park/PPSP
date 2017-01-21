@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+## 0.0.5 (pre-release)
+
+## 0.0.4 (2017-01-20, alpha release)
+
+#### fixes:
+ - fixed SlideScroll commonJS module name to 'slide-scroll'
+
 ## 0.0.3 (2017-01-20, alpha release)
 
 #### features:
