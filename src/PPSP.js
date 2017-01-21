@@ -17,28 +17,46 @@
 	function PPSP(args){
 		root = this;
 		args = args || {};
-		for (var k in args) {
-			root[k] = args[k];
-		}
-		root.ss = new SlideScroll(args.SlideScroll);
+		
+		root.selector = args.selector || 'section';
+		root.duration = args.duration || 400;
+		root.enableStash = args.enableStash || false;
+		root.lockViewport = args.lockViewport || false;
+		root.onLeave = args.onLeave;
+		root.afterLoad = args.afterLoad;
+		root.onStash = args.onStash;
+		root.afterStash = args.afterStash;
+
 		root.el = document.querySelectorAll(root.selector);
 		root.currentIndex = 0;
 		root.inTransit = false;
+
+		root._ss = new SlideScroll({duration:args.duration});
+		root._stash_data = []; // arguments for PPSP.goto() === [index, callback, callback_args]
 	};
 
 	// function refreshTargetDOMs(selector) {
 	// 	var doms = document.querySelectorAll(selector),
 	// 		targets = [];
 	// 	for (var i = 0; i < doms.length; i++) {
-	// 		if (!doms[i].hasAttribute('data-sp-skip')) targets.push(doms[i]);
+	// 		if (!doms[i].hasAttribute('data-ppsp-skip')) targets.push(doms[i]);
 	// 	}
 	// 	return targets;
 	// }
 
 	function isSkipping(idx){
 		var _t = root.el[idx];
-		return _t.hasAttribute('data-sp-skip') ||
+		return _t.hasAttribute('data-ppsp-skip') ||
 			   window.getComputedStyle(_t,null).getPropertyValue('display') === 'none' ? true : false;
+	}
+
+	function isStashEnabled(idx){
+		var _t = root.el[idx];
+		return _t.hasAttribute('data-ppsp-stash') || root.enableStash ? true : false;
+	}
+
+	function isInbound(){
+		return (root.el[0].getBoundingClientRect().top < 0 && root.el[root.el.length-1].getBoundingClientRect().top > 0) ? true : false;
 	}
 
 	function getPrevIndex(origin_index){
@@ -104,8 +122,9 @@
 			var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
 
 			if (root.onLeave) root.onLeave.call(root, target_index);
-			root.ss.to(target_px, function(){
+			root._ss.to(target_px, function(){
 				root.currentIndex = target_index;
+				root.cancelStash();
 				root.inTransit = false;
 				if (root.afterLoad) root.afterLoad.call(root);
 				if (callback) callback.apply(null,callback_args);
@@ -123,35 +142,79 @@
 		root.snap();
 	};
 
+	PPSP.prototype.stash = function(idx, callback, callback_args){
+		if (!root.inTransit && root._stash_data.length === 0) {
+			var _stash_data_arr = [idx, callback, callback_args];
+			if (root._stash_data[0] !== _stash_data_arr[0] || root._stash_data[1] !== _stash_data_arr[1] || root._stash_data[2] !== _stash_data_arr[2]) {
+				if (root.onStash) root.onStash.call(root, _stash_data_arr);
+				root._stash_data = _stash_data_arr;
+				if (root.afterStash) root.afterStash.call(root, _stash_data_arr);
+			}
+		}
+	};
+
+	PPSP.prototype.pop = function(){
+		root.goto.apply(root, root._stash_data);
+	};
+
+	PPSP.prototype.cancelStash = function(){
+		root._stash_data = [];
+	};
+
 	window.addEventListener('wheel', function(e){
-		e.preventDefault();
-		if (!root.ss._is_scrolling) {
-			if (e.deltaY < 0) root.prev(); //moving up
-			else root.next(); // moving down
+		if (isInbound()) {
+			e.preventDefault();
+			if (isStashEnabled(root.currentIndex)) {
+				if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up
+				else root.stash(getNextIndex()); // moving down
+			} else {
+				if (e.deltaY < 0) root.prev(); //moving up
+				else root.next(); // moving down
+			}
 		}
 	});
 
 	window.addEventListener('keydown', function(e){
-		//e.preventDefault();
-		if (e.key === 'ArrowDown') {
-			root.next();
-		} else if (e.key === 'ArrowUp') {
-			root.prev();
-		} else if (e.key === ' ') {
-			if (e.shiftKey) root.prev();
-			else root.next();
-		} else {}
+		if (isInbound()) {
+			if (isStashEnabled(root.currentIndex)) {
+				if (e.key === 'ArrowDown') {
+					e.preventDefault();
+					root.stash(getNextIndex());
+				} else if (e.key === 'ArrowUp') {
+					e.preventDefault();
+					root.stash(getPrevIndex());
+				} else if (e.key === ' ') {
+					e.preventDefault();
+					if (e.shiftKey) root.stash(getPrevIndex());
+					else root.stash(getNextIndex());
+				} else {}
+			} else {
+				if (e.key === 'ArrowDown') {
+					e.preventDefault();
+					root.next();
+				} else if (e.key === 'ArrowUp') {
+					e.preventDefault();
+					root.prev();
+				} else if (e.key === ' ') {
+					e.preventDefault();
+					if (e.shiftKey) root.prev();
+					else root.next();
+				} else {}
+			}
+		}
 	});
 
 	window.addEventListener('scroll', function(e){
-		console.log('scrolled');
-		window.setTimeout(root.snap,500);
+		if (root.lockViewport) {
+			window.setTimeout(root.snap,500);
+		} else {
+			if (isInbound()) window.setTimeout(root.snap,500);
+		}
 	});
 
 	window.addEventListener('resize', function(e){
 		window.setTimeout(root.snap,500);
 	});
-
-
+	
 	return PPSP;
 }));

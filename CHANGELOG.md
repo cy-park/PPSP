@@ -1,7 +1,16 @@
 CHANGELOG
 =========
 
-## 0.0.6 (pre-release)
+## 0.0.7 (pre-release)
+
+## 0.0.6 (2017-01-20, alpha release)
+
+#### features:
+ - added `duration (milliseconds)` settings in constructor arguments
+ - added `enableStash: true/false` settings in constructor arguments to hold a transition event until `PPSP.pop()` is called
+ - added `data-ppsp-stash` DOM atribute to enable stash on each individual DOM
+ - added `PPSP.stash()` and `PPSP.pop()`
+ - added `lockViewport: true/false` settings in constructor arguments to allow/limit to move out of the first and last target edges
 
 ## 0.0.5 (2017-01-20, alpha release)
 
@@ -34,7 +43,8 @@ CHANGELOG
 #### features:
  - added `PPSP.prev()`, `PPSP.next()`, `PPSP.goto()` method
  - added keyboard navigation
- - added section skipping functionality
+ - added section skipping functionality using `data-ppsp-skip` DOM attribute
+ - added section skipping functionality when target DOM is `display: none`
 
 ## 0.0.0 (boilerplate)
 
