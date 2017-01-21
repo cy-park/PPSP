@@ -23,6 +23,7 @@
 		root.ss = new SlideScroll(args.SlideScroll);
 		root.el = document.querySelectorAll(root.selector);
 		root.currentIndex = 0;
+		root.inTransit = false;
 	};
 
 	// function refreshTargetDOMs(selector) {
@@ -95,17 +96,21 @@
 	};
 
 	PPSP.prototype.goto = function(target_index, callback, callback_args){
-		if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
-		if (isSkipping(target_index))
-			target_index = root.currentIndex - target_index < 0 ? getNextIndex(target_index) : getPrevIndex(target_index);
-		var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
+		if (!root.inTransit) {
+			root.inTransit = true;
+			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
+			if (isSkipping(target_index))
+				target_index = root.currentIndex - target_index < 0 ? getNextIndex(target_index) : getPrevIndex(target_index);
+			var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
 
-		if (root.onLeave) root.onLeave.call(root);
-		root.ss.to(target_px, function(){
-			root.currentIndex = target_index;
-			if (root.afterLoad) root.afterLoad.call(root);
-			if (callback) callback.apply(null,callback_args);
-		});
+			if (root.onLeave) root.onLeave.call(root, target_index);
+			root.ss.to(target_px, function(){
+				root.currentIndex = target_index;
+				root.inTransit = false;
+				if (root.afterLoad) root.afterLoad.call(root);
+				if (callback) callback.apply(null,callback_args);
+			});
+		}
 	};
 
 	PPSP.prototype.snap = function(){
