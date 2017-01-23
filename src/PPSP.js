@@ -35,15 +35,6 @@
 		root._stash_data = []; // arguments for PPSP.goto() === [index, callback, callback_args]
 	};
 
-	// function refreshTargetDOMs(selector) {
-	// 	var doms = document.querySelectorAll(selector),
-	// 		targets = [];
-	// 	for (var i = 0; i < doms.length; i++) {
-	// 		if (!doms[i].hasAttribute('data-ppsp-skip')) targets.push(doms[i]);
-	// 	}
-	// 	return targets;
-	// }
-
 	function isSkipping(idx){
 		var _t = root.el[idx];
 		return _t.hasAttribute('data-ppsp-skip') ||
@@ -55,8 +46,15 @@
 		return _t.hasAttribute('data-ppsp-stash') || root.enableStash ? true : false;
 	}
 
-	function isInbound(){
-		return (root.el[0].getBoundingClientRect().top < 0 && root.el[root.el.length-1].getBoundingClientRect().top > 0) ? true : false;
+	function getBoundaryStatus(){
+		var _status;
+		if (root.el[0].getBoundingClientRect().top > 0) {
+			_status = 'outTop';
+		} else { // if (root.el[0].getBoundingClientRect().top <= 0)
+			if (root.el[root.el.length-1].getBoundingClientRect().top > 0) _status = 'in';
+			else _status = 'outBottom';
+		}
+		return _status;
 	}
 
 	function getPrevIndex(origin_index){
@@ -162,20 +160,28 @@
 	};
 
 	window.addEventListener('wheel', function(e){
-		if (isInbound()) {
-			e.preventDefault();
+		if (getBoundaryStatus() === 'in') {
 			if (isStashEnabled(root.currentIndex)) {
+				e.preventDefault();
 				if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up
 				else root.stash(getNextIndex()); // moving down
 			} else {
-				if (e.deltaY < 0) root.prev(); //moving up
-				else root.next(); // moving down
+				if (e.deltaY < 0) {
+					if (root.currentIndex > 0) e.preventDefault();
+					root.prev(); //moving up
+				}
+				else {
+					if (root.currentIndex < root.el.length-1) e.preventDefault();
+					root.next(); // moving down
+				}
 			}
+		} else {
+			//TODO: actions at outbounds
 		}
 	});
 
 	window.addEventListener('keydown', function(e){
-		if (isInbound()) {
+		if (getBoundaryStatus() === 'in') {
 			if (isStashEnabled(root.currentIndex)) {
 				if (e.key === 'ArrowDown') {
 					e.preventDefault();
@@ -190,10 +196,8 @@
 				} else {}
 			} else {
 				if (e.key === 'ArrowDown') {
-					e.preventDefault();
 					root.next();
 				} else if (e.key === 'ArrowUp') {
-					e.preventDefault();
 					root.prev();
 				} else if (e.key === ' ') {
 					e.preventDefault();
@@ -201,6 +205,8 @@
 					else root.next();
 				} else {}
 			}
+		} else {
+			//TODO: actions at outbounds
 		}
 	});
 
@@ -208,13 +214,13 @@
 		if (root.lockViewport) {
 			window.setTimeout(root.snap,500);
 		} else {
-			if (isInbound()) window.setTimeout(root.snap,500);
+			if (getBoundaryStatus() === 'in') window.setTimeout(root.snap,500);
 		}
 	});
 
 	window.addEventListener('resize', function(e){
 		window.setTimeout(root.snap,500);
 	});
-	
+
 	return PPSP;
 }));

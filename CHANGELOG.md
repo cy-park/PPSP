@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.0.7 (pre-release)
+## 0.0.8 (pre-release)
+
+## 0.0.7 (2017-01-21, alpha release)
+
+#### fixes:
+ - fixed mousewheel and keydown eventlisteners behavior at outbounds
 
 ## 0.0.6 (2017-01-20, alpha release)
 

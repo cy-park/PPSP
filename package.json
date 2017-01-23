@@ -1,6 +1,6 @@
 {
   "name": "ppsp",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A snappy transition web page creator. Page-Page-Snappy-Page or Pen-Pineapple-Snapple-Pen.",
   "main": "src/PPSP.js",
   "scripts": {
