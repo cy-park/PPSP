@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.0.8 (pre-release)
+## 0.0.9 (pre-release)
+
+## 0.0.8 (2017-01-23, alpha release)
+
+#### updates:
+ - updated to cancel multiple wheel events coming in a row
 
 ## 0.0.7 (2017-01-23, alpha release)
 
