@@ -20,9 +20,9 @@
 <body>
 	<header>header</header>
 	<section>1</section>
-	<section data-ppsp-stash>2</section>
-	<section data-ppsp-skip>3</section>
-	<section data-ppsp-stash>4</section>
+	<section data--ppsp-stash>2</section>
+	<section data--ppsp-skip>3</section>
+	<section data--ppsp-stash>4</section>
 	<section>5</section>
 	<footer>footer</footer>
 </body>
@@ -31,16 +31,16 @@
 		selector: 'section',
 		// lockViewport: true,
 		onLeave: function(t){
-			console.log('onLeave fired at page '+this.currentIndex+' to go to '+t);
+			// console.log('onLeave fired at page '+this.currentIndex+' to go to '+t);
 		},
 		afterLoad: function(){
-			console.log('afterLoad fired at page '+this.currentIndex);
+			// console.log('afterLoad fired at page '+this.currentIndex);
 		},
 		onStash: function(arr){
-			console.log('onStash fired', arr);
+			// console.log('onStash fired', arr);
 		},
 		afterStash: function(arr){
-			console.log('afterStash fired', arr);
+			// console.log('afterStash fired', arr);
 			window.setTimeout(ppsp.pop, 500);
 		}
 	});

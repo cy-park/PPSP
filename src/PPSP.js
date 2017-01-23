@@ -29,10 +29,13 @@
 
 		root.el = document.querySelectorAll(root.selector);
 		root.currentIndex = 0;
+		root.touchThreshold = args.touchThreshold || 50;
 		root.inTransit = false;
+		root.pauseSnap = false;
 
 		root._ss = new SlideScroll({duration:args.duration});
 		root._stash_data = []; // arguments for PPSP.goto() === [index, callback, callback_args]
+		root._touch_start;
 	};
 
 	function isSkipping(idx){
@@ -131,7 +134,8 @@
 	};
 
 	PPSP.prototype.snap = function(){
-		if (root.el[root.currentIndex].getBoundingClientRect().top !== 0) root.goto(getClosestIndexFromViewport());
+		if (!root.pauseSnap && root.el[root.currentIndex].getBoundingClientRect().top !== 0)
+			root.goto(getClosestIndexFromViewport());
 	};
 
 	PPSP.prototype.refresh = function(selector){
@@ -209,6 +213,32 @@
 			//TODO: actions at outbounds
 		}
 	});
+
+	window.addEventListener('touchstart', function(e){
+		root._touch_start = e.touches[0].clientY;
+	});
+	window.addEventListener('touchmove', function(e){
+		var _touch_move = e.touches[0].clientY;
+		if (Math.abs(root._touch_start - _touch_move) > root.touchThreshold) {
+			if (getBoundaryStatus() === 'in') {
+				e.preventDefault();
+				if (isStashEnabled(root.currentIndex)) {
+					// swipe down / scroll up
+					if (root._touch_start - _touch_move < 0) root.stash(getPrevIndex());
+					// swipe up / scroll down
+					else root.stash(getNextIndex());
+				} else {
+					// swipe up / scroll down
+					if (root._touch_start - _touch_move < 0) root.prev();
+					// swipe down / scroll up
+					else root.next();
+				}
+			} else {
+				//TODO: actions at outbounds
+			}
+		}
+	});
+	window.addEventListener('touchend', function(e){});
 
 	window.addEventListener('scroll', function(e){
 		if (root.lockViewport) {

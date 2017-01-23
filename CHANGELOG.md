@@ -3,7 +3,11 @@ CHANGELOG
 
 ## 0.0.8 (pre-release)
 
-## 0.0.7 (2017-01-21, alpha release)
+## 0.0.7 (2017-01-23, alpha release)
+
+#### features:
+ - added touch events
+ - added `pauseSnap` option
 
 #### fixes:
  - fixed mousewheel and keydown eventlisteners behavior at outbounds
