@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.0.9 (pre-release)
+## 0.0.10 (pre-release)
+
+## 0.0.9 (2017-01-23, alpha release)
+
+#### fixes:
+ - fixed event handler bugs
 
 ## 0.0.8 (2017-01-23, alpha release)
 

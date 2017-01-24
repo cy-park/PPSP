@@ -39,6 +39,13 @@
 		root._wheel = {
 			event_arr: []
 		};
+
+		window.addEventListener('wheel', onWheel);
+		window.addEventListener('keydown', onKeydown); 
+		window.addEventListener('touchstart', onTouchstart);
+		window.addEventListener('touchmove', onTouchmove);
+		window.addEventListener('touchend', onTouchend);
+		window.addEventListener('resize', onResize);
 	};
 
 	function isSkipping(idx){
@@ -176,7 +183,7 @@
 		root._stash_data = [];
 	};
 
-	window.addEventListener('wheel', function(e){
+	function onWheel(e){
 
 		if(root._wheel.event_arr.length > 149) root._wheel.event_arr.shift();
 		root._wheel.event_arr.push(e);
@@ -210,9 +217,10 @@
 		} else {
 			//TODO: actions at outbounds
 		}
-	});
+	}
 
-	window.addEventListener('keydown', function(e){
+	function onKeydown(e){
+
 		if (getBoundaryStatus() === 'in') {
 			if (isStashEnabled(root.currentIndex)) {
 				if (e.key === 'ArrowDown') {
@@ -240,12 +248,13 @@
 		} else {
 			//TODO: actions at outbounds
 		}
-	});
+	}
 
-	window.addEventListener('touchstart', function(e){
+	function onTouchstart(e){
 		root._touch_start = e.touches[0].clientY;
-	});
-	window.addEventListener('touchmove', function(e){
+	}
+
+	function onTouchmove(e){
 		var _touch_move = e.touches[0].clientY;
 		if (Math.abs(root._touch_start - _touch_move) > root.touchThreshold) {
 			if (getBoundaryStatus() === 'in') {
@@ -265,20 +274,21 @@
 				//TODO: actions at outbounds
 			}
 		}
-	});
-	window.addEventListener('touchend', function(e){});
+	}
 
-	window.addEventListener('scroll', function(e){
+	function onTouchend(e){};
+
+	function onScroll(e){
 		if (root.lockViewport) {
 			window.setTimeout(root.snap,500);
 		} else {
 			if (getBoundaryStatus() === 'in') window.setTimeout(root.snap,500);
 		}
-	});
+	}
 
-	window.addEventListener('resize', function(e){
+	function onResize(e){
 		window.setTimeout(root.snap,500);
-	});
+	}
 
 	return PPSP;
 }));
