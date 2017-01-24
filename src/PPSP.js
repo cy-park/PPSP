@@ -36,6 +36,9 @@
 		root._ss = new SlideScroll({duration:args.duration});
 		root._stash_data = []; // arguments for PPSP.goto() === [index, callback, callback_args]
 		root._touch_start;
+		root._wheel = {
+			event_arr: []
+		};
 	};
 
 	function isSkipping(idx){
@@ -54,8 +57,8 @@
 		if (root.el[0].getBoundingClientRect().top > 0) {
 			_status = 'outTop';
 		} else { // if (root.el[0].getBoundingClientRect().top <= 0)
-			if (root.el[root.el.length-1].getBoundingClientRect().top > 0) _status = 'in';
-			else _status = 'outBottom';
+			if (root.el[root.el.length-1].getBoundingClientRect().top < 0) _status = 'outBottom';
+			else _status = 'in';
 		}
 		return _status;
 	}
@@ -104,6 +107,16 @@
 			} 
 		}
 		return closest_index;
+	}
+
+	function getEventDeltaAverage(event_arr, number){
+		var sum = 0;
+		//taking `number` elements from the end to make the average, if there are not enought, 1
+		var lastElements = event_arr.slice(Math.max(event_arr.length - number, 1));
+		for(var i = 0; i < lastElements.length; i++){
+			sum += Math.abs(lastElements[i].deltaY);
+		}
+		return Math.ceil(sum/number);
 	}
 
 	PPSP.prototype.prev = function(callback, callback_args){
@@ -164,20 +177,35 @@
 	};
 
 	window.addEventListener('wheel', function(e){
+
+		if(root._wheel.event_arr.length > 149) root._wheel.event_arr.shift();
+		root._wheel.event_arr.push(e);
+
+		var prevTime = root._wheel.event_arr[root._wheel.event_arr.length-1].timeStamp;
+		var currTime = e.timeStamp;
+		if(currTime - prevTime > 250) root._wheel.event_arr = [];
+
 		if (getBoundaryStatus() === 'in') {
-			if (isStashEnabled(root.currentIndex)) {
-				e.preventDefault();
-				if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up
-				else root.stash(getNextIndex()); // moving down
+			var averageEnd = getEventDeltaAverage(root._wheel.event_arr, 10);
+			var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 20); console.log(averageEnd, averageMiddle);
+			var isAccelerating = averageEnd >= averageMiddle;
+			if (averageEnd >= averageMiddle) {
+				if (isStashEnabled(root.currentIndex)) {
+					e.preventDefault();
+					if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up
+					else root.stash(getNextIndex()); // moving down
+				} else {
+					if (e.deltaY < 0) {
+						if (root.currentIndex > 0) e.preventDefault();
+						root.prev(); //moving up
+					}
+					else {
+						if (root.currentIndex < root.el.length-1) e.preventDefault();
+						root.next(); // moving down
+					}
+				}
 			} else {
-				if (e.deltaY < 0) {
-					if (root.currentIndex > 0) e.preventDefault();
-					root.prev(); //moving up
-				}
-				else {
-					if (root.currentIndex < root.el.length-1) e.preventDefault();
-					root.next(); // moving down
-				}
+				e.preventDefault();
 			}
 		} else {
 			//TODO: actions at outbounds
