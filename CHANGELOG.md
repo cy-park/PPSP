@@ -1,7 +1,13 @@
 CHANGELOG
 =========
 
-## 0.0.10 (pre-release)
+## 0.0.11 (pre-release)
+
+## 0.0.10 (2017-01-27, alpha release)
+
+#### fixes:
+ - fixed scroll event handler bugs
+ - fixed wonky snap on the first/last pages
 
 ## 0.0.9 (2017-01-23, alpha release)
 

@@ -41,6 +41,7 @@
 		};
 
 		window.addEventListener('wheel', onWheel);
+		window.addEventListener('scroll', onScroll);
 		window.addEventListener('keydown', onKeydown); 
 		window.addEventListener('touchstart', onTouchstart);
 		window.addEventListener('touchmove', onTouchmove);
@@ -282,7 +283,9 @@
 		if (root.lockViewport) {
 			window.setTimeout(root.snap,500);
 		} else {
-			if (getBoundaryStatus() === 'in') window.setTimeout(root.snap,500);
+			window.setTimeout(function(){
+				if (getBoundaryStatus() === 'in') root.snap();
+			},500);
 		}
 	}
 
