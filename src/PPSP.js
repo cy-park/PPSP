@@ -138,24 +138,57 @@
 	PPSP.prototype.goto = function(target_index, callback, callback_args){
 		if (!root.inTransit) {
 			root.inTransit = true;
-			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
-			if (isSkipping(target_index))
-				target_index = root.currentIndex - target_index < 0 ? getNextIndex(target_index) : getPrevIndex(target_index);
-			var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
-
-			if (root.onLeave) root.onLeave.call(root, target_index);
-			root._ss.to(target_px, function(){
-				root.currentIndex = target_index;
-				root.cancelStash();
-				root.inTransit = false;
-				if (root.afterLoad) root.afterLoad.call(root);
-				if (callback) callback.apply(null,callback_args);
-			});
+			_gotoWorker(target_index, callback, callback_args);
 		}
 	};
 
+	function _gotoWorker(target_index, callback, callback_args) {
+
+		if (root.currentIndex !== target_index) {
+
+			var dir = root.currentIndex - target_index < 0 ? 'down' : 'up';
+			root._ss.duration = Math.abs(root.currentIndex - target_index) > 1 ? 0 : root.duration;
+
+			var current_target = dir === 'up' ? root.currentIndex - 1 : root.currentIndex + 1
+
+			var target_px = window.pageYOffset + root.el[current_target].getBoundingClientRect().top;
+			if (root.onLeave) root.onLeave.call(root, current_target);
+			root._ss.to(target_px, function(){
+				// root.currentIndex = root.currentIndex;
+				root.cancelStash();
+				if (root.afterLoad) root.afterLoad.call(root, current_target);
+				root.currentIndex = current_target;
+				_gotoWorker(target_index, callback, callback_args);
+			});
+		} else {
+			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
+			if (callback) callback.apply(null,callback_args);
+			root.inTransit = false;
+		}
+	}
+
+	// PPSP.prototype.goto = function(target_index, callback, callback_args){
+	// 	if (!root.inTransit) {
+	// 		root.inTransit = true;
+	// 		if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
+	// 		if (isSkipping(target_index))
+	// 			target_index = root.currentIndex - target_index < 0 ? getNextIndex(target_index) : getPrevIndex(target_index);
+	// 		var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
+
+	// 		if (root.onLeave) root.onLeave.call(root, target_index);
+	// 		root._ss.to(target_px, function(){
+	// 			root.prevIndex = root.currentIndex;
+	// 			root.currentIndex = target_index;
+	// 			root.cancelStash();
+	// 			root.inTransit = false;
+	// 			if (root.afterLoad) root.afterLoad.call(root);
+	// 			if (callback) callback.apply(null,callback_args);
+	// 		});
+	// 	}
+	// };
+
 	PPSP.prototype.snap = function(){
-		if (!root.pauseSnap && root.el[root.currentIndex].getBoundingClientRect().top !== 0)
+		if (!root.inTransit && !root.pauseSnap && root.el[root.currentIndex].getBoundingClientRect().top !== 0)
 			root.goto(getClosestIndexFromViewport());
 	};
 
@@ -195,7 +228,7 @@
 
 		if (getBoundaryStatus() === 'in') {
 			var averageEnd = getEventDeltaAverage(root._wheel.event_arr, 10);
-			var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 20); console.log(averageEnd, averageMiddle);
+			var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 20); //console.log(averageEnd, averageMiddle);
 			var isAccelerating = averageEnd >= averageMiddle;
 			if (averageEnd >= averageMiddle) {
 				if (isStashEnabled(root.currentIndex)) {
@@ -283,9 +316,7 @@
 		if (root.lockViewport) {
 			window.setTimeout(root.snap,500);
 		} else {
-			window.setTimeout(function(){
-				if (getBoundaryStatus() === 'in') root.snap();
-			},500);
+			if (!root.inTransit && getBoundaryStatus() === 'in') window.setTimeout(root.snap,500);
 		}
 	}
 

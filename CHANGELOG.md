@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.0.11 (pre-release)
+## 0.0.12 (pre-release)
+
+## 0.0.11 (2017-01-27, alpha release)
+
+#### fixes:
+ - fixed bugs while jumping multiple pages
 
 ## 0.0.10 (2017-01-27, alpha release)
 
