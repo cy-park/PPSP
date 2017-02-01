@@ -1,7 +1,13 @@
 CHANGELOG
 =========
 
-## 0.0.15 (pre-release)
+## 0.0.16 (pre-release)
+
+## 0.0.15 (2017-01-31, alpha release)
+
+#### fixes:
+ - fixed stash issue while onKeydown(): handling when stashing the section 0.
+ - revert back from ‘updated to clear PPSP._wheel.event_arr when _gotoWorker() is called.’ due to slippery scroll.
 
 ## 0.0.14 (2017-01-31, alpha release)
 

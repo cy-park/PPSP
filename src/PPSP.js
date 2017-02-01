@@ -163,7 +163,6 @@
 				_gotoWorker(target_index, callback, callback_args);
 			});
 		} else {
-			root._wheel.event_arr = []
 			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
 			if (callback) callback.apply(null,callback_args);
 			root.inTransit = false;
@@ -265,11 +264,17 @@
 		if (getBoundaryStatus() === 'in') {
 			if (isStashEnabled(root.currentIndex)) {
 				if (e.key === 'ArrowDown') {
-					e.preventDefault();
-					root.stash(getNextIndex());
+					var ni = getNextIndex();
+					if (root.currentIndex !== ni) {
+						e.preventDefault();
+						root.stash(getNextIndex());
+					}
 				} else if (e.key === 'ArrowUp') {
-					e.preventDefault();
-					root.stash(getPrevIndex());
+					var pi = getPrevIndex();
+					if (root.currentIndex !== pi) {
+						e.preventDefault();
+						root.stash(getPrevIndex());
+					}
 				} else if (e.key === ' ') {
 					e.preventDefault();
 					if (e.shiftKey) root.stash(getPrevIndex());
