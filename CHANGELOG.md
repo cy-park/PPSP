@@ -1,7 +1,13 @@
 CHANGELOG
 =========
 
-## 0.0.14 (pre-release)
+## 0.0.15 (pre-release)
+
+## 0.0.14 (2017-01-31, alpha release)
+
+#### updates:
+ - adjust onWheel()
+ - updated to clear PPSP._wheel.event_arr when _gotoWorker() is called.
 
 ## 0.0.13 (2017-01-31, alpha release)
 

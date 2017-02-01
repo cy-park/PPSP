@@ -163,6 +163,7 @@
 				_gotoWorker(target_index, callback, callback_args);
 			});
 		} else {
+			root._wheel.event_arr = []
 			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
 			if (callback) callback.apply(null,callback_args);
 			root.inTransit = false;
@@ -230,7 +231,7 @@
 
 		if (getBoundaryStatus() === 'in') {
 			var averageEnd = getEventDeltaAverage(root._wheel.event_arr, 10);
-			var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 20); //console.log(averageEnd, averageMiddle);
+			var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 70); //console.log(averageEnd, averageMiddle);
 			var isAccelerating = averageEnd >= averageMiddle;
 
 			var horizontalDetection = typeof e.wheelDeltaX !== 'undefined' || typeof e.deltaX !== 'undefined';
