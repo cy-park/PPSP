@@ -151,7 +151,7 @@
 			var dir = root.currentIndex - target_index < 0 ? 'down' : 'up';
 			root._ss.duration = Math.abs(root.currentIndex - target_index) > 1 ? 0 : root.duration;
 
-			var current_target = dir === 'up' ? root.currentIndex - 1 : root.currentIndex + 1
+			var current_target = dir === 'up' ? getPrevIndex() : getNextIndex();
 
 			var target_px = window.pageYOffset + root.el[current_target].getBoundingClientRect().top;
 			if (root.onLeave) root.onLeave.call(root, current_target);
@@ -232,7 +232,11 @@
 			var averageEnd = getEventDeltaAverage(root._wheel.event_arr, 10);
 			var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 20); //console.log(averageEnd, averageMiddle);
 			var isAccelerating = averageEnd >= averageMiddle;
-			if (averageEnd >= averageMiddle) {
+
+			var horizontalDetection = typeof e.wheelDeltaX !== 'undefined' || typeof e.deltaX !== 'undefined';
+			var isScrollingVertically = (Math.abs(e.wheelDeltaX) < Math.abs(e.wheelDelta)) || (Math.abs(e.deltaX ) < Math.abs(e.deltaY) || !horizontalDetection);
+
+			if (averageEnd >= averageMiddle && isScrollingVertically) {
 				if (isStashEnabled(root.currentIndex)) {
 					e.preventDefault();
 					if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up

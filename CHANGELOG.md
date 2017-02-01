@@ -1,7 +1,15 @@
 CHANGELOG
 =========
 
-## 0.0.13 (pre-release)
+## 0.0.14 (pre-release)
+
+## 0.0.13 (2017-01-31, alpha release)
+
+#### updates:
+ - added horizontal scroll detect to prevent double swipe
+
+#### fixes:
+ - fixed _gotoWorker() bug
 
 ## 0.0.12 (2017-01-31, alpha release)
 
