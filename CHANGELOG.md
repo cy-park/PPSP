@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.0.12 (pre-release)
+## 0.0.13 (pre-release)
+
+## 0.0.12 (2017-01-31, alpha release)
+
+#### fixes:
+ - fixed getClosestIndexFromViewport() bug
 
 ## 0.0.11 (2017-01-27, alpha release)
 
