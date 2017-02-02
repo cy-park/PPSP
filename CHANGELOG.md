@@ -3,6 +3,11 @@ CHANGELOG
 
 ## 0.0.16 (pre-release)
 
+## 0.0.16 (2017-02-02, alpha release)
+
+#### updates
+ - added wheel timeout holder to prevent overscroll
+
 ## 0.0.15 (2017-01-31, alpha release)
 
 #### fixes:

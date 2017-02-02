@@ -19,7 +19,7 @@
 		args = args || {};
 		
 		root.selector = args.selector || 'section';
-		root.duration = args.duration || 400;
+		root.duration = args.duration || 700;
 		root.enableStash = args.enableStash || false;
 		root.lockViewport = args.lockViewport || false;
 		root.onLeave = args.onLeave;
@@ -37,7 +37,8 @@
 		root._stash_data = []; // arguments for PPSP.goto() === [index, callback, callback_args]
 		root._touch_start;
 		root._wheel = {
-			event_arr: []
+			event_arr: [],
+			timeout_holder: null // Introducing timeout_holder to prevent overscroll as of v0.0.16
 		};
 
 		window.addEventListener('wheel', onWheel);
@@ -236,7 +237,14 @@
 			var horizontalDetection = typeof e.wheelDeltaX !== 'undefined' || typeof e.deltaX !== 'undefined';
 			var isScrollingVertically = (Math.abs(e.wheelDeltaX) < Math.abs(e.wheelDelta)) || (Math.abs(e.deltaX ) < Math.abs(e.deltaY) || !horizontalDetection);
 
-			if (averageEnd >= averageMiddle && isScrollingVertically) {
+			// Introducing timeout_holder to prevent overscroll as of v0.0.16
+			if (averageEnd >= averageMiddle && isScrollingVertically && !root._wheel.timeout_holder) {
+
+				root._wheel.timeout_holder = window.setTimeout(function() {
+					window.clearTimeout(root._wheel.timeout_holder);
+					root._wheel.timeout_holder = undefined;
+				}, 700);
+
 				if (isStashEnabled(root.currentIndex)) {
 					e.preventDefault();
 					if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up
