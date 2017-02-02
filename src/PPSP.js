@@ -120,6 +120,15 @@
 		return closest_index;
 	}
 
+	function getClosestAvailableIndex(idx) {
+		var dir = root.currentIndex - idx < 0 ? 'down' : 'up';
+		var target_index = idx;
+		if (isSkipping(target_index)) {
+			target_index = dir === 'up' ? getPrevIndex(target_index) : getNextIndex(target_index);
+		}
+		return target_index;
+	}
+
 	function getEventDeltaAverage(event_arr, number){
 		var sum = 0;
 		//taking `number` elements from the end to make the average, if there are not enought, 1
@@ -141,7 +150,7 @@
 	PPSP.prototype.goto = function(target_index, callback, callback_args){
 		if (!root.inTransit) {
 			root.inTransit = true;
-			_gotoWorker(target_index, callback, callback_args);
+			_gotoWorker(getClosestAvailableIndex(target_index), callback, callback_args);
 		}
 	};
 
