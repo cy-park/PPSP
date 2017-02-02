@@ -1,7 +1,15 @@
 CHANGELOG
 =========
 
-## 0.0.16 (pre-release)
+## 0.0.18 (pre-release)
+
+## 0.0.17 (2017-02-02, alpha release)
+
+#### updates:
+ - added getClosestAvailableIndex() for internal calcs
+
+#### fixes:
+ - fixed goto() bug when target is skipping (stop jumping!)
 
 ## 0.0.16 (2017-02-02, alpha release)
 
