@@ -1,6 +1,6 @@
 {
   "name": "ppsp",
-  "version": "0.0.17",
+  "version": "0.1.0",
   "description": "A snappy transition web page creator. Page-Page-Snappy-Page or Pen-Pineapple-Snapple-Pen.",
   "main": "src/PPSP.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "uglify-js": "^2.7.5"
   },
   "dependencies": {
+    "quietwheel": "^0.1.1",
     "slide-scroll": "0.0.2"
   }
 }

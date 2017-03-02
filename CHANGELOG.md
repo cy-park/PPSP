@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.0.18 (pre-release)
+## 0.1.1 (pre-release)
+
+## 0.1.0 (2017-03-02, beta release)
+
+#### updates:
+ - applied QuietWheel library to handle wheel events
 
 ## 0.0.17 (2017-02-02, alpha release)
 
@@ -13,7 +18,7 @@ CHANGELOG
 
 ## 0.0.16 (2017-02-02, alpha release)
 
-#### updates
+#### updates:
  - added wheel timeout holder to prevent overscroll
 
 ## 0.0.15 (2017-01-31, alpha release)
