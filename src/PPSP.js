@@ -41,7 +41,6 @@
 			timeout_holder: null // Introducing timeout_holder to prevent overscroll as of v0.0.16
 		};
 
-		// window.addEventListener('wheel', onWheel);
 		QuietWheel(onQuietWheel,[],function(){
 			return getBoundaryStatus() === 'in' ? false : true;
 		});
@@ -182,26 +181,6 @@
 		}
 	}
 
-	// PPSP.prototype.goto = function(target_index, callback, callback_args){
-	// 	if (!root.inTransit) {
-	// 		root.inTransit = true;
-	// 		if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
-	// 		if (isSkipping(target_index))
-	// 			target_index = root.currentIndex - target_index < 0 ? getNextIndex(target_index) : getPrevIndex(target_index);
-	// 		var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
-
-	// 		if (root.onLeave) root.onLeave.call(root, target_index);
-	// 		root._ss.to(target_px, function(){
-	// 			root.prevIndex = root.currentIndex;
-	// 			root.currentIndex = target_index;
-	// 			root.cancelStash();
-	// 			root.inTransit = false;
-	// 			if (root.afterLoad) root.afterLoad.call(root);
-	// 			if (callback) callback.apply(null,callback_args);
-	// 		});
-	// 	}
-	// };
-
 	PPSP.prototype.snap = function(){
 		if (!root.inTransit && !root.pauseSnap && root.el[root.currentIndex].getBoundingClientRect().top !== 0)
 			root.goto(getClosestIndexFromViewport());
@@ -252,53 +231,6 @@
 
 		}
 	}
-
-	// function onWheel(e){
-
-	// 	if(root._wheel.event_arr.length > 149) root._wheel.event_arr.shift();
-	// 	root._wheel.event_arr.push(e);
-
-	// 	var prevTime = root._wheel.event_arr[root._wheel.event_arr.length-1].timeStamp;
-	// 	var currTime = e.timeStamp;
-	// 	if(currTime - prevTime > 250) root._wheel.event_arr = [];
-
-	// 	if (getBoundaryStatus() === 'in') {
-	// 		var averageEnd = getEventDeltaAverage(root._wheel.event_arr, 10);
-	// 		var averageMiddle = getEventDeltaAverage(root._wheel.event_arr, 70); //console.log(averageEnd, averageMiddle);
-	// 		var isAccelerating = averageEnd >= averageMiddle;
-
-	// 		var horizontalDetection = typeof e.wheelDeltaX !== 'undefined' || typeof e.deltaX !== 'undefined';
-	// 		var isScrollingVertically = (Math.abs(e.wheelDeltaX) < Math.abs(e.wheelDelta)) || (Math.abs(e.deltaX ) < Math.abs(e.deltaY) || !horizontalDetection);
-
-	// 		// Introducing timeout_holder to prevent overscroll as of v0.0.16
-	// 		if (averageEnd >= averageMiddle && isScrollingVertically && !root._wheel.timeout_holder) {
-
-	// 			root._wheel.timeout_holder = window.setTimeout(function() {
-	// 				window.clearTimeout(root._wheel.timeout_holder);
-	// 				root._wheel.timeout_holder = undefined;
-	// 			}, 700);
-
-	// 			if (isStashEnabled(root.currentIndex)) {
-	// 				e.preventDefault();
-	// 				if (e.deltaY < 0) root.stash(getPrevIndex()); //moving up
-	// 				else root.stash(getNextIndex()); // moving down
-	// 			} else {
-	// 				if (e.deltaY < 0) {
-	// 					if (root.currentIndex > 0) e.preventDefault();
-	// 					root.prev(); //moving up
-	// 				}
-	// 				else {
-	// 					if (root.currentIndex < root.el.length-1) e.preventDefault();
-	// 					root.next(); // moving down
-	// 				}
-	// 			}
-	// 		} else {
-	// 			e.preventDefault();
-	// 		}
-	// 	} else {
-	// 		//TODO: actions at outbounds
-	// 	}
-	// }
 
 	function onKeydown(e){
 
@@ -365,7 +297,7 @@
 
 	function onTouchend(e){};
 
-	function onScroll(e){ console.log('root.lockViewport',root.lockViewport)
+	function onScroll(e){
 		if (root.lockViewport) {
 			window.setTimeout(root.snap,500);
 		} else {
