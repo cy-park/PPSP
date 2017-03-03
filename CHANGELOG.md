@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.1.3 (pre-release)
+## 0.1.4 (pre-release)
+
+## 0.1.3 (2017-03-02, beta release)
+
+#### updates:
+ - bumped up dependency of slide-scroll to 0.1.1
 
 ## 0.1.2 (2017-03-02, beta release)
 
