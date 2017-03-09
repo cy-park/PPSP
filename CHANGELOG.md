@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.1.4 (pre-release)
+## 0.1.5 (pre-release)
+
+## 0.1.4 (2017-03-09, beta release)
+
+#### updates:
+ - onLeave() and afterLoad() callback functions now have direction as their second default argument.
 
 ## 0.1.3 (2017-03-02, beta release)
 

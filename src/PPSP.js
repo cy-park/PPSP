@@ -84,6 +84,11 @@
 		return 0;
 	}
 
+	/**
+	 * getNextIndex(origin_index)
+	 *
+	 * Get next page index from input page index.
+	 */
 	function getNextIndex(origin_index){
 		origin_index = origin_index || root.currentIndex;
 		var target_index = origin_index + 1;
@@ -122,6 +127,12 @@
 		return closest_index;
 	}
 
+	/**
+	 * getClosestAvailableIndex(idx)
+	 *
+	 * Get the closest available page index from input.
+	 * Keep adding +1 or -1 if the next page is skipping.
+	 */
 	function getClosestAvailableIndex(idx) {
 		var dir = root.currentIndex - idx < 0 ? 'down' : 'up';
 		var target_index = idx;
@@ -156,6 +167,11 @@
 		}
 	};
 
+	/**
+	 * _gotoWorker(target_index, callback, callback_args)
+	 * 
+	 * @param {integer} target_index: target page index whose availability is already confirmed.
+	 */
 	function _gotoWorker(target_index, callback, callback_args) {
 
 		if (root.currentIndex !== target_index) {
@@ -163,14 +179,19 @@
 			var dir = root.currentIndex - target_index < 0 ? 'down' : 'up';
 			root._ss.duration = Math.abs(root.currentIndex - target_index) > 1 ? 0 : root.duration;
 
+			// While target_index means the final destination of a user's current interaction,
+			// current_target is one of many pages passing by to get to target_index.
+			// For example, to go from page 5 to 8, PPSP goes through page 6 and 7, and then finally get to page 8.
+			// This behavior is to make sure all callback events are timely called.
+			// current_target keeps changing to 6, 7, and lastly 8, according to the current progress.
 			var current_target = dir === 'up' ? getPrevIndex() : getNextIndex();
 
 			var target_px = window.pageYOffset + root.el[current_target].getBoundingClientRect().top;
-			if (root.onLeave) root.onLeave.call(root, current_target);
+			if (root.onLeave) root.onLeave.call(root, current_target, dir);
 			root._ss.to(target_px, function(){
 				// root.currentIndex = root.currentIndex;
 				root.cancelStash();
-				if (root.afterLoad) root.afterLoad.call(root, current_target);
+				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
 				root.currentIndex = current_target;
 				_gotoWorker(target_index, callback, callback_args);
 			});
