@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.1.5 (pre-release)
+## 0.1.6 (pre-release)
+
+## 0.1.5 (2017-03-09, beta release)
+
+#### fixes:
+ - fixed wrong currentIndex number in afterLoad() callback.
 
 ## 0.1.4 (2017-03-09, beta release)
 

@@ -191,8 +191,8 @@
 			root._ss.to(target_px, function(){
 				// root.currentIndex = root.currentIndex;
 				root.cancelStash();
-				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
 				root.currentIndex = current_target;
+				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
 				_gotoWorker(target_index, callback, callback_args);
 			});
 		} else {
