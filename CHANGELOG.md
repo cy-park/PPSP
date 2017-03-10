@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.1.7 (pre-release)
+## 0.1.8 (pre-release)
+
+## 0.1.7 (2017-03-10, beta release)
+
+#### fixes:
+ - fixed `PPSP.getPrevIndex()` and `PPSP.getNextIndex()` return bug.
 
 ## 0.1.6 (2017-03-10, beta release)
 

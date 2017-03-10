@@ -153,11 +153,11 @@
 	}
 
 	PPSP.prototype.getPrevIndex = function(origin_index){
-		_getPrevIndex(origin_index);
+		return _getPrevIndex(origin_index);
 	};
 
 	PPSP.prototype.getNextIndex = function(origin_index){
-		_getNextIndex(origin_index);
+		return _getNextIndex(origin_index);
 	};
 
 	PPSP.prototype.prev = function(callback, callback_args){
