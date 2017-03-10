@@ -74,27 +74,27 @@
 		return _status;
 	}
 
-	function getPrevIndex(origin_index){
+	function _getPrevIndex(origin_index){
 		origin_index = origin_index || root.currentIndex;
 		var target_index = origin_index - 1;
 
 		if (target_index > 0)
-			return isSkipping(target_index) ? getPrevIndex(target_index) : target_index;
+			return isSkipping(target_index) ? _getPrevIndex(target_index) : target_index;
 
 		return 0;
 	}
 
 	/**
-	 * getNextIndex(origin_index)
+	 * _getNextIndex(origin_index)
 	 *
 	 * Get next page index from input page index.
 	 */
-	function getNextIndex(origin_index){
+	function _getNextIndex(origin_index){
 		origin_index = origin_index || root.currentIndex;
 		var target_index = origin_index + 1;
 
 		if (target_index < root.el.length - 1)
-			return isSkipping(target_index) ? getNextIndex(target_index) : target_index;
+			return isSkipping(target_index) ? _getNextIndex(target_index) : target_index;
 
 		return root.el.length - 1;
 	}
@@ -111,8 +111,8 @@
 				}
 				else {
 					if (isSkipping(closest_index)) {
-						var prev_index = getPrevIndex(closest_index),
-							next_index = getNextIndex(closest_index);
+						var prev_index = _getPrevIndex(closest_index),
+							next_index = _getNextIndex(closest_index);
 
 						var prev_top = root.el[prev_index].getBoundingClientRect().top,
 							next_top = root.el[next_index].getBoundingClientRect().top;
@@ -137,7 +137,7 @@
 		var dir = root.currentIndex - idx < 0 ? 'down' : 'up';
 		var target_index = idx;
 		if (isSkipping(target_index)) {
-			target_index = dir === 'up' ? getPrevIndex(target_index) : getNextIndex(target_index);
+			target_index = dir === 'up' ? _getPrevIndex(target_index) : _getNextIndex(target_index);
 		}
 		return target_index;
 	}
@@ -152,12 +152,20 @@
 		return Math.ceil(sum/number);
 	}
 
+	PPSP.prototype.getPrevIndex = function(origin_index){
+		_getPrevIndex(origin_index);
+	};
+
+	PPSP.prototype.getNextIndex = function(origin_index){
+		_getNextIndex(origin_index);
+	};
+
 	PPSP.prototype.prev = function(callback, callback_args){
-		root.goto(getPrevIndex(), callback, callback_args);
+		root.goto(_getPrevIndex(), callback, callback_args);
 	};
 
 	PPSP.prototype.next = function(callback, callback_args){
-		root.goto(getNextIndex(), callback, callback_args);
+		root.goto(_getNextIndex(), callback, callback_args);
 	};
 
 	PPSP.prototype.goto = function(target_index, callback, callback_args){
@@ -184,7 +192,7 @@
 			// For example, to go from page 5 to 8, PPSP goes through page 6 and 7, and then finally get to page 8.
 			// This behavior is to make sure all callback events are timely called.
 			// current_target keeps changing to 6, 7, and lastly 8, according to the current progress.
-			var current_target = dir === 'up' ? getPrevIndex() : getNextIndex();
+			var current_target = dir === 'up' ? _getPrevIndex() : _getNextIndex();
 
 			var target_px = window.pageYOffset + root.el[current_target].getBoundingClientRect().top;
 			if (root.onLeave) root.onLeave.call(root, current_target, dir);
@@ -238,8 +246,8 @@
 
 			if (isStashEnabled(root.currentIndex)) {
 				e.originalWheelEvent.preventDefault();
-				if (e.direction === 'up') root.stash(getPrevIndex()); //moving up
-				else root.stash(getNextIndex()); // moving down
+				if (e.direction === 'up') root.stash(_getPrevIndex()); //moving up
+				else root.stash(_getNextIndex()); // moving down
 			} else {
 				if (e.direction === 'up') {
 					if (root.currentIndex > 0) e.originalWheelEvent.preventDefault();
@@ -258,21 +266,21 @@
 		if (getBoundaryStatus() === 'in') {
 			if (isStashEnabled(root.currentIndex)) {
 				if (e.key === 'ArrowDown') {
-					var ni = getNextIndex();
+					var ni = _getNextIndex();
 					if (root.currentIndex !== ni) {
 						e.preventDefault();
-						root.stash(getNextIndex());
+						root.stash(_getNextIndex());
 					}
 				} else if (e.key === 'ArrowUp') {
-					var pi = getPrevIndex();
+					var pi = _getPrevIndex();
 					if (root.currentIndex !== pi) {
 						e.preventDefault();
-						root.stash(getPrevIndex());
+						root.stash(_getPrevIndex());
 					}
 				} else if (e.key === ' ') {
 					e.preventDefault();
-					if (e.shiftKey) root.stash(getPrevIndex());
-					else root.stash(getNextIndex());
+					if (e.shiftKey) root.stash(_getPrevIndex());
+					else root.stash(_getNextIndex());
 				} else {}
 			} else {
 				if (e.key === 'ArrowDown') {
@@ -301,9 +309,9 @@
 				e.preventDefault();
 				if (isStashEnabled(root.currentIndex)) {
 					// swipe down / scroll up
-					if (root._touch_start - _touch_move < 0) root.stash(getPrevIndex());
+					if (root._touch_start - _touch_move < 0) root.stash(_getPrevIndex());
 					// swipe up / scroll down
-					else root.stash(getNextIndex());
+					else root.stash(_getNextIndex());
 				} else {
 					// swipe up / scroll down
 					if (root._touch_start - _touch_move < 0) root.prev();

@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.1.6 (pre-release)
+## 0.1.7 (pre-release)
+
+## 0.1.6 (2017-03-10, beta release)
+
+#### features:
+ - added `PPSP.getPrevIndex()` and `PPSP.getNextIndex()` as public methods.
 
 ## 0.1.5 (2017-03-09, beta release)
 
