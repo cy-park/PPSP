@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.1.8 (pre-release)
+## 0.1.9 (pre-release)
+
+## 0.1.8 (2017-03-14, beta release)
+
+#### fixes:
+ - fixed multiple touch input bug.
 
 ## 0.1.7 (2017-03-10, beta release)
 

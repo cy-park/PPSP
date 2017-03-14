@@ -36,6 +36,9 @@
 		root._ss = new SlideScroll({duration:args.duration});
 		root._stash_data = []; // arguments for PPSP.goto() === [index, callback, callback_args]
 		root._touch_start;
+		// After a touch input has been made, check if the first touchmove event is fired.
+		// If so, prevent all following touchmove events so that it cancels multiple scrolls.
+		root._isTouchMoveInitiated = false
 		root._wheel = {
 			event_arr: [],
 			timeout_holder: null // Introducing timeout_holder to prevent overscroll as of v0.0.16
@@ -67,7 +70,7 @@
 		var _status;
 		if (root.el[0].getBoundingClientRect().top > 0) {
 			_status = 'outTop';
-		} else { // if (root.el[0].getBoundingClientRect().top <= 0)
+		} else {
 			if (root.el[root.el.length-1].getBoundingClientRect().top < 0) _status = 'outBottom';
 			else _status = 'in';
 		}
@@ -299,32 +302,46 @@
 	}
 
 	function onTouchstart(e){
+		if (getBoundaryStatus() === 'in' && root.el[root.el.length-1].getBoundingClientRect().top > 0) {
+			e.preventDefault();
+		}
 		root._touch_start = e.touches[0].clientY;
+		root._isTouchMoveInitiated = false;
 	}
 
-	function onTouchmove(e){
+	function onTouchmove(e){ 
 		var _touch_move = e.touches[0].clientY;
 		if (Math.abs(root._touch_start - _touch_move) > root.touchThreshold) {
 			if (getBoundaryStatus() === 'in') {
-				e.preventDefault();
-				if (isStashEnabled(root.currentIndex)) {
-					// swipe down / scroll up
-					if (root._touch_start - _touch_move < 0) root.stash(_getPrevIndex());
-					// swipe up / scroll down
-					else root.stash(_getNextIndex());
+
+				if (!root._isTouchMoveInitiated) {
+					root._isTouchMoveInitiated = true;
+					e.preventDefault();
+					if (isStashEnabled(root.currentIndex)) {
+						// swipe down / scroll up
+						if (root._touch_start - _touch_move < 0) root.stash(_getPrevIndex());
+						// swipe up / scroll down
+						else root.stash(_getNextIndex());
+					} else {
+						// swipe up / scroll down
+						if (root._touch_start - _touch_move < 0) root.prev();
+						// swipe down / scroll up
+						else root.next();
+					}
 				} else {
-					// swipe up / scroll down
-					if (root._touch_start - _touch_move < 0) root.prev();
-					// swipe down / scroll up
-					else root.next();
+					e.preventDefault();
 				}
+
+				
 			} else {
 				//TODO: actions at outbounds
 			}
 		}
 	}
 
-	function onTouchend(e){};
+	function onTouchend(e){
+		
+	};
 
 	function onScroll(e){
 		if (root.lockViewport) {
