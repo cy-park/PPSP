@@ -1,7 +1,13 @@
 CHANGELOG
 =========
 
-## 0.1.9 (pre-release)
+## 0.2.1 (pre-release)
+
+## 0.2.0 (2017-03-16, beta release)
+
+#### updates:
+ - enhanced most calculations for edge cases.
+ - now advancing to header/footer area (if exists) with snap motions when using mouse or touch. no header/footer snaps for keyboard.
 
 ## 0.1.8 (2017-03-14, beta release)
 

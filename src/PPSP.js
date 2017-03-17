@@ -196,20 +196,31 @@
 			// This behavior is to make sure all callback events are timely called.
 			// current_target keeps changing to 6, 7, and lastly 8, according to the current progress.
 			var current_target = dir === 'up' ? _getPrevIndex() : _getNextIndex();
+			var curTop = root.el[current_target].getBoundingClientRect().top;
+			var target_px = window.pageYOffset + curTop;
 
-			var target_px = window.pageYOffset + root.el[current_target].getBoundingClientRect().top;
 			if (root.onLeave) root.onLeave.call(root, current_target, dir);
 			root._ss.to(target_px, function(){
-				// root.currentIndex = root.currentIndex;
 				root.cancelStash();
 				root.currentIndex = current_target;
 				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
 				_gotoWorker(target_index, callback, callback_args);
 			});
-		} else {
-			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
-			if (callback) callback.apply(null,callback_args);
-			root.inTransit = false;
+		} else { // this else loop is necessary when first gets into boundary from top and requires snap
+			var dir = 'stay';
+			if (curTop < 0) dir = 'up';
+			else if (curTop > 0) dir = 'down';
+
+			var curTop = root.el[root.currentIndex].getBoundingClientRect().top;
+			var target_px = window.pageYOffset + curTop;
+
+			root._ss.to(target_px, function(){
+				root.cancelStash();
+				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
+				if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
+				if (callback) callback.apply(null,callback_args);
+				root.inTransit = false;
+			});
 		}
 	}
 
@@ -246,21 +257,62 @@
 	function onQuietWheel(e){
 
 		if (getBoundaryStatus() === 'in') {
-
+			e.originalWheelEvent.preventDefault();
 			if (isStashEnabled(root.currentIndex)) {
-				e.originalWheelEvent.preventDefault();
-				if (e.direction === 'up') root.stash(_getPrevIndex()); //moving up
-				else root.stash(_getNextIndex()); // moving down
+				if (e.direction === 'up') {
+					if (root.currentIndex === 0) {
+						if (!root.inTransit) {
+							root.inTransit = true;
+							root._ss.to(Math.max(window.pageYOffset - window.innerHeight, 0), function(){
+								root.inTransit = false;
+							});
+						}
+					} else {
+						root.stash(_getPrevIndex()); //moving up
+					}
+				} else {
+					if (root.currentIndex === root.el.length-1) {
+						if (!root.inTransit) {
+							root.inTransit = true;
+							root._ss.to(window.pageYOffset + window.innerHeight, function(){
+								root.inTransit = false;
+							});
+						}
+					} else {
+						root.stash(_getNextIndex()); // moving down	
+					}
+				}
 			} else {
 				if (e.direction === 'up') {
-					if (root.currentIndex > 0) e.originalWheelEvent.preventDefault();
-					root.prev(); //moving up
+					if (root.currentIndex === 0) {
+						if (!root.inTransit) {
+							root.inTransit = true;
+							root._ss.to(Math.max(window.pageYOffset - window.innerHeight, 0), function(){
+								root.inTransit = false;
+							});
+						}
+					} else {
+						// if (root.currentIndex > 0) e.originalWheelEvent.preventDefault();
+						root.prev(); //moving up
+					}
 				} else {
-					if (root.currentIndex < root.el.length-1) e.originalWheelEvent.preventDefault();
-					root.next(); // moving down
+					if (root.currentIndex === root.el.length-1) {
+						if (!root.inTransit) {
+							root.inTransit = true;
+							root._ss.to(window.pageYOffset + window.innerHeight, function(){
+								root.inTransit = false;
+							});
+						}
+					} else {
+						// if (root.currentIndex < root.el.length-1) e.originalWheelEvent.preventDefault();
+						root.next(); // moving down
+					}
 				}
 			}
-
+		} else {
+			if ((root.currentIndex === 0 && root.el[0].getBoundingClientRect().top < 0) ||
+				(root.currentIndex === root.el.length-1 && root.el[root.el.length-1].getBoundingClientRect().top > 0))
+				e.originalWheelEvent.preventDefault();
 		}
 	}
 
@@ -302,8 +354,12 @@
 	}
 
 	function onTouchstart(e){
-		if (getBoundaryStatus() === 'in' && root.el[root.el.length-1].getBoundingClientRect().top > 0) {
+		if (getBoundaryStatus() === 'in') {
 			e.preventDefault();
+		} else {
+			if ((root.currentIndex === 0 && root.el[0].getBoundingClientRect().top < 0) ||
+				(root.currentIndex === root.el.length-1 && root.el[root.el.length-1].getBoundingClientRect().top > 0))
+				e.preventDefault();
 		}
 		root._touch_start = e.touches[0].clientY;
 		root._isTouchMoveInitiated = false;
@@ -313,42 +369,91 @@
 		var _touch_move = e.touches[0].clientY;
 		if (Math.abs(root._touch_start - _touch_move) > root.touchThreshold) {
 			if (getBoundaryStatus() === 'in') {
-
+				e.preventDefault();
 				if (!root._isTouchMoveInitiated) {
 					root._isTouchMoveInitiated = true;
-					e.preventDefault();
 					if (isStashEnabled(root.currentIndex)) {
-						// swipe down / scroll up
-						if (root._touch_start - _touch_move < 0) root.stash(_getPrevIndex());
-						// swipe up / scroll down
-						else root.stash(_getNextIndex());
+						if (root._touch_start - _touch_move < 0) {
+							// swipe down / scroll up
+							if (root.currentIndex === 0) {
+								if (!root.inTransit) {
+									root.inTransit = true;
+									root._ss.to(Math.max(window.pageYOffset - window.innerHeight, 0), function(){
+										root.inTransit = false;
+									});
+								}
+							} else {
+								root.stash(_getPrevIndex()); //moving up
+							}
+						} else {
+							// swipe up / scroll down
+							if (root.currentIndex === root.el.length-1) {
+								if (!root.inTransit) {
+									root.inTransit = true;
+									root._ss.to(window.pageYOffset + window.innerHeight, function(){
+										root.inTransit = false;
+									});
+								}
+							} else {
+								root.stash(_getNextIndex()); // moving down	
+							}
+						}
 					} else {
-						// swipe up / scroll down
-						if (root._touch_start - _touch_move < 0) root.prev();
-						// swipe down / scroll up
-						else root.next();
+						if (root._touch_start - _touch_move < 0) {
+							// swipe up / scroll down
+							if (root.currentIndex === 0) {
+								if (!root.inTransit) {
+									root.inTransit = true;
+									root._ss.to(Math.max(window.pageYOffset - window.innerHeight, 0), function(){
+										root.inTransit = false;
+									});
+								}
+							} else {
+								// if (root.currentIndex > 0) e.originalWheelEvent.preventDefault();
+								root.prev(); //moving up
+							}
+						} else {
+							// swipe down / scroll up
+							if (root.currentIndex === root.el.length-1) {
+								if (!root.inTransit) {
+									root.inTransit = true;
+									root._ss.to(window.pageYOffset + window.innerHeight, function(){
+										root.inTransit = false;
+									});
+								}
+							} else {
+								root.next(); // moving down
+							}
+						}
 					}
-				} else {
-					e.preventDefault();
 				}
-
-				
 			} else {
-				//TODO: actions at outbounds
+				// when getBoundaryStatus() is still outbounds but already got into the 'in' area
+				// stop default movement immediately
+				if ((root.currentIndex === 0 && root.el[0].getBoundingClientRect().top < 0) ||
+					(root.currentIndex === root.el.length-1 && root.el[root.el.length-1].getBoundingClientRect().top > 0))
+					e.preventDefault();
 			}
 		}
 	}
 
-	function onTouchend(e){
-		
-	};
+	function onTouchend(e){};
 
 	function onScroll(e){
-		if (root.lockViewport) {
-			window.setTimeout(root.snap,500);
-		} else {
-			if (!root.inTransit && getBoundaryStatus() === 'in') window.setTimeout(root.snap,500);
-		}
+
+		window.setTimeout(function(){
+			if (root.lockViewport) {
+				root.snap();
+			} else {
+				if (!root.inTransit && getBoundaryStatus() === 'in') root.snap();
+			}
+		},500);
+
+		// if (root.lockViewport) {
+		// 	window.setTimeout(root.snap,500);
+		// } else {
+		// 	if (!root.inTransit && getBoundaryStatus() === 'in') window.setTimeout(root.snap,500);
+		// }
 	}
 
 	function onResize(e){
