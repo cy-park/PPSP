@@ -196,31 +196,20 @@
 			// This behavior is to make sure all callback events are timely called.
 			// current_target keeps changing to 6, 7, and lastly 8, according to the current progress.
 			var current_target = dir === 'up' ? _getPrevIndex() : _getNextIndex();
-			var curTop = root.el[current_target].getBoundingClientRect().top;
-			var target_px = window.pageYOffset + curTop;
 
+			var target_px = window.pageYOffset + root.el[current_target].getBoundingClientRect().top;
 			if (root.onLeave) root.onLeave.call(root, current_target, dir);
 			root._ss.to(target_px, function(){
+				// root.currentIndex = root.currentIndex;
 				root.cancelStash();
 				root.currentIndex = current_target;
 				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
 				_gotoWorker(target_index, callback, callback_args);
 			});
-		} else { // this else loop is necessary when first gets into boundary from top and requires snap
-			var dir = 'stay';
-			if (curTop < 0) dir = 'up';
-			else if (curTop > 0) dir = 'down';
-
-			var curTop = root.el[root.currentIndex].getBoundingClientRect().top;
-			var target_px = window.pageYOffset + curTop;
-
-			root._ss.to(target_px, function(){
-				root.cancelStash();
-				if (root.afterLoad) root.afterLoad.call(root, current_target, dir);
-				if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
-				if (callback) callback.apply(null,callback_args);
-				root.inTransit = false;
-			});
+		} else {
+			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
+			if (callback) callback.apply(null,callback_args);
+			root.inTransit = false;
 		}
 	}
 

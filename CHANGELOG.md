@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.2.1 (pre-release)
+## 0.2.2 (pre-release)
+
+## 0.2.1 (2017-03-16, beta release)
+
+#### fixes:
+ - reverted back to old goto worker function. actually it worked fine.
 
 ## 0.2.0 (2017-03-16, beta release)
 
