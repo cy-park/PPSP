@@ -222,7 +222,7 @@
 		}
 	}
 
-	PPSP.prototype.snap = function(){ console.log(getClosestIndexFromViewport())
+	PPSP.prototype.snap = function(){
 		if (!root.inTransit && !root.pauseSnap && root.el[root.currentIndex].getBoundingClientRect().top !== 0)
 			root.goto(getClosestIndexFromViewport());
 	};
@@ -439,7 +439,7 @@
 
 	function onScroll(e){
 
-		window.setTimeout(function(){ console.log(root.inTransit, getBoundaryStatus())
+		window.setTimeout(function(){
 			if (root.lockViewport) {
 				root.snap();
 			} else {
