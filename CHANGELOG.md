@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.2.2 (pre-release)
+## 0.2.3 (pre-release)
+
+## 0.2.2 (2017-03-23, beta release)
+
+#### fixes:
+ - fixed snap not occurring when being scrolled into the first slide from outside.
 
 ## 0.2.1 (2017-03-16, beta release)
 

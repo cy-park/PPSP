@@ -207,13 +207,22 @@
 				_gotoWorker(target_index, callback, callback_args);
 			});
 		} else {
-			if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
-			if (callback) callback.apply(null,callback_args);
-			root.inTransit = false;
+			var runCallback = function(){
+				if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
+				if (callback) callback.apply(null,callback_args);
+				root.inTransit = false;
+			};
+
+			if (root.el[target_index].getBoundingClientRect().top !== 0) {
+				var target_px = window.pageYOffset + root.el[target_index].getBoundingClientRect().top;
+				root._ss.to(target_px, runCallback);
+			} else {
+				runCallback();
+			}
 		}
 	}
 
-	PPSP.prototype.snap = function(){
+	PPSP.prototype.snap = function(){ console.log(getClosestIndexFromViewport())
 		if (!root.inTransit && !root.pauseSnap && root.el[root.currentIndex].getBoundingClientRect().top !== 0)
 			root.goto(getClosestIndexFromViewport());
 	};
@@ -430,7 +439,7 @@
 
 	function onScroll(e){
 
-		window.setTimeout(function(){
+		window.setTimeout(function(){ console.log(root.inTransit, getBoundaryStatus())
 			if (root.lockViewport) {
 				root.snap();
 			} else {
