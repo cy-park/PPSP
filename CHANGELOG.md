@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-## 0.2.4 (pre-release)
+## 0.2.5 (pre-release)
+
+## 0.2.4 (2017-03-28, beta release)
+
+#### features:
+ - added `downtime` setting
 
 ## 0.2.3 (2017-03-23, beta release)
 

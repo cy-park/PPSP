@@ -20,6 +20,7 @@
 		
 		root.selector = args.selector || 'section';
 		root.duration = args.duration || 700;
+		root.downtime = args.downtime || 0;
 		root.enableStash = args.enableStash || false;
 		root.lockViewport = args.lockViewport || false;
 		root.onLeave = args.onLeave;
@@ -210,7 +211,9 @@
 			var runCallback = function(){
 				if (callback_args && callback_args.constructor !== Array) callback_args = [callback_args];
 				if (callback) callback.apply(null,callback_args);
-				root.inTransit = false;
+				setTimeout(function(){
+					root.inTransit = false;
+				}, root.downtime);
 			};
 
 			if (root.el[target_index].getBoundingClientRect().top !== 0) {
